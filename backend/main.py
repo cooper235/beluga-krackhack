@@ -1,50 +1,83 @@
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import yara
 import pefile
+import hashlib
 
 app = FastAPI()
 
 UPLOAD_DIR = "uploads"
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 
-# Load YARA rules (Placeholder - replace with actual rules)
-RULES = yara.compile(source="""
-rule SuspiciousString
-{
-    strings:
-        $a = "malware"
-    condition:
-        $a
-}
-""")
+# Define Allowed File Extensions & Size Limit
+ALLOWED_EXTENSIONS = {".exe", ".pdf", ".docx"}
+MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
+
+# Load YARA Rules from File (Ensure 'rules.yar' Exists in Project Folder)
+try:
+    RULES = yara.compile(filepath="rules.yar")
+except Exception as e:
+    print(f"⚠️ Error loading YARA rules: {e}")
+    RULES = None
+
+# Function to Validate Allowed File Types
+def is_allowed_file(filename):
+    return any(filename.endswith(ext) for ext in ALLOWED_EXTENSIONS)
+
+# Function to Compute SHA-256 Hash of a File
+def get_file_hash(file_path):
+    with open(file_path, "rb") as f:
+        return hashlib.sha256(f.read()).hexdigest()
+
+# Function to Scan File with YARA
+def scan_with_yara(file_path):
+    if RULES:
+        matches = RULES.match(file_path)
+        return [match.rule for match in matches]
+    return []
+
+# Function to Analyze PE Files (Only for `.exe` Files)
+def analyze_pe_file(file_path):
+    try:
+        pe = pefile.PE(file_path)
+        sections = [section.Name.decode().strip() for section in pe.sections]
+        return {"sections": sections, "suspicious": ".text" not in sections}
+    except Exception as e:
+        return {"error": f"PE analysis failed: {str(e)}"}
 
 @app.post("/scan/")
 async def scan_file(file: UploadFile = File(...)):
-    """Handle file uploads and scan for malware indicators."""
-    file_path = os.path.join(UPLOAD_DIR, file.filename)
-    
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
-    
-    # Perform YARA scan
-    matches = RULES.match(file_path)
-    
-    # Perform PE file analysis (if executable)
-    pe_info = None
-    if file.filename.endswith(".exe"):
-        try:
-            pe = pefile.PE(file_path)
-            pe_info = {"sections": [section.Name.decode().strip() for section in pe.sections]}
-        except Exception as e:
-            pe_info = {"error": str(e)}
+    """Handle File Uploads & Scan for Malware Indicators"""
 
-    verdict = "Malicious" if matches else "Clean"
+    # Validate File Type
+    if not is_allowed_file(file.filename):
+        raise HTTPException(status_code=400, detail="Invalid file type. Allowed: .exe, .pdf, .docx")
+
+    # Read File Contents & Validate Size
+    contents = await file.read()
+    if len(contents) > MAX_FILE_SIZE:
+        raise HTTPException(status_code=400, detail="File too large (Max: 5MB).")
+
+    # Save File Temporarily
+    file_path = os.path.join(UPLOAD_DIR, file.filename)
+    with open(file_path, "wb") as f:
+        f.write(contents)
+
+    # Perform Malware Analysis
+    yara_matches = scan_with_yara(file_path)
+    file_hash = get_file_hash(file_path)
+    pe_info = analyze_pe_file(file_path) if file.filename.endswith(".exe") else None
+
+    # Clean Up Temporary File
+    os.remove(file_path)
+
+    # Determine Verdict
+    verdict = "Malicious" if yara_matches or (pe_info and pe_info.get("suspicious")) else "Clean"
 
     return {
         "filename": file.filename,
         "verdict": verdict,
-        "yara_matches": [match.rule for match in matches],
-        "pe_info": pe_info
+        "yara_matches": yara_matches,
+        "pe_info": pe_info,
+        "file_hash": file_hash
     }
-
