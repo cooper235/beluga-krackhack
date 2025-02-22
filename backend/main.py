@@ -15,7 +15,7 @@ MAX_FILE_SIZE = 5 * 1024 * 1024  # 5MB
 
 # Load YARA Rules from File (Ensure 'rules.yar' Exists in Project Folder)
 try:
-    yara.compile(filepath="backend/yara_rules.yar")
+    RULES = yara.compile(filepath="backend/yara_rules.yar")
 
 except Exception as e:
     print(f"⚠️ Error loading YARA rules: {e}")
