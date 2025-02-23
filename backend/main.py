@@ -20,7 +20,8 @@ try:
 except Exception as e:
     print(f"⚠️ Error loading YARA rules: {e}")
     RULES = None
-
+def read_root():
+    return {"message": "Welcome to the Malware Analysis API!"}
 # Function to Validate Allowed File Types
 def is_allowed_file(filename):
     return any(filename.endswith(ext) for ext in ALLOWED_EXTENSIONS)
