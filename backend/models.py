@@ -36,6 +36,10 @@ def get_db():
         db.close()
 
 # Save Scan Result Function
+def get_scan_results(db: Session):
+    """Retrieve all stored scan results."""
+    return db.query(ScanResult).all()
+
 def save_scan_result(db: Session, scan_data: dict):
     """Save scan results to the database, avoiding duplicate file hash entries."""
     existing_entry = db.query(ScanResult).filter(ScanResult.file_hash == scan_data["file_hash"]).first()
