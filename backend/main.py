@@ -20,6 +20,7 @@ try:
 except Exception as e:
     print(f"⚠️ Error loading YARA rules: {e}")
     RULES = None
+@app.get("/")
 def read_root():
     return {"message": "Welcome to the Malware Analysis API!"}
 # Function to Validate Allowed File Types
