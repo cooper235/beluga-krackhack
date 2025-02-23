@@ -1,1 +1,327 @@
+!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Malware Scanner</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+            overflow: hidden;
+            position: relative;
+        }
+        /* Background Video */
+        .video-background {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
 
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6); /* Dark overlay for better text visibility */
+            z-index: -1;
+        }
+
+        .content {
+            max-width: 1000px;
+            width: 100%;
+            padding: 20px;
+            animation: fadeIn 1s ease-in-out;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 4rem;
+            margin: 0;
+            color: #8deeb7;
+            text-shadow: 0 4px 10px rgba(0, 195, 255, 0.4);
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .subtitle {
+            font-family: 'Playfair Display';
+            font-size: 1.5rem;
+            color: #edefd9;
+            font-weight: 100;
+            margin: 10px 0 40px 0;
+            font-style: italic;
+            animation: marquee 10s linear infinite;
+            text-align: center;
+        }
+
+        /* File Upload Section */
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(45deg, #19232e, #0b6f84);
+            padding: 15px 30px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+            font-family: 'fantasy';
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .file-label:hover {
+            background: linear-gradient(45deg, #071626, #0b6f84);
+            transform: translateY(-5px);
+        }
+
+        .upload-icon {
+            font-size: 2.0rem;
+            margin-right: 10px;
+        }
+
+        .scan-button {
+            background: linear-gradient(45deg, #007bff, #00d4ff);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease;
+            font-family: 'fantasy';
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .scan-button:hover {
+            background: linear-gradient(45deg, #0056b3, #0099ff);
+            transform: translateY(-5px);
+        }
+
+        /* Result Section */
+        .result {
+            margin-top: 40px;
+            display: none;
+            animation: slideIn 0.5s ease-in-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-container {
+            display: flex;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        .file-details {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            max-width: 60%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .verdict-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 15px;
+            flex: 1;
+            max-width: 35%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .verdict {
+            font-family: 'Montserrat';
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin: 0;
+            animation: pop 0.5s ease-in-out;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0); }
+            80% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .risk-report {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.2rem;
+            color: #ddd;
+            line-height: 1.6;
+        }
+
+        .clean {
+            color: #4caf50;
+        }
+
+        .malicious {
+            color: #ff4d4d;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .result-container {
+                flex-direction: column;
+            }
+
+            .file-details, .verdict-container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="content">
+        <h1>🔍 Malware Scanner</h1>
+        <p class="subtitle">Upload a file to check for malicious content.</p>
+        <video autoplay muted loop class="video-background">
+            <source src="https://www.pexels.com/download/video/3141210/" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+
+        <!-- File Upload Section -->
+        <div class="upload-section">
+            <input type="file" id="fileInput" class="file-input" accept=".exe, .docx, .pdf">
+            <label for="fileInput" class="file-label">
+                <span class="upload-icon">📂</span>
+                <span class="upload-text">Choose a File</span>
+            </label>
+            <button id="scanButton" class="scan-button">🚀 Scan File</button>
+        </div>
+
+        <!-- Result Section -->
+        <div id="result" class="result">
+            <div class="result-container">
+                <!-- Left Side: File Details -->
+                <div class="file-details">
+                    <div id="riskReport" class="risk-report"></div>
+                </div>
+
+                <!-- Right Side: Verdict -->
+                <div class="verdict-container">
+                    <div id="verdict" class="verdict"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Display file details immediately after file selection
+        document.getElementById("fileInput").addEventListener("change", function () {
+            const fileInput = document.getElementById("fileInput");
+            const riskReportDiv = document.getElementById("riskReport");
+
+            if (fileInput.files.length) {
+                const file = fileInput.files[0];
+                const fileName = file.name;
+                const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+
+                // Display file details on the left side
+                riskReportDiv.innerHTML = 
+                    `<strong>File Name:</strong> ${fileName}<br>
+                    <strong>File Size:</strong> ${fileSize} MB<br>`;
+            }
+        });
+
+        // Handle scan button click
+        document.getElementById("scanButton").addEventListener("click", function () {
+            const fileInput = document.getElementById("fileInput");
+            const resultDiv = document.getElementById("result");
+            const verdictDiv = document.getElementById("verdict");
+
+            // Check if a file is selected
+            if (!fileInput.files.length) {
+                alert("Please select a file to scan.");
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const fileSize = (file.size / (1024 * 1024)).toFixed(2); // Size in MB
+
+            // Check if file size is greater than 5 MB
+            if (fileSize > 5) {
+                alert("File size should be less than 5 MB.");
+                return;
+            }
+
+            // Show "Scanning..." message on the right side
+            verdictDiv.textContent = "Scanning...";
+            verdictDiv.className = "verdict";
+            resultDiv.style.display = "block";
+
+            // Create a FormData object to send the file to the backend
+            const formData = new FormData();
+            formData.append("file", file);
+
+            // Send the file to the backend using Fetch API
+            fetch("/scan", { // Replace "/scan" with your backend endpoint
+                method: "POST",
+                body: formData,
+            })
+            .then(response => response.json()) // Parse the JSON response
+            .then(data => {
+                // Update the UI based on the backend's response
+                if (data.isMalicious) {
+                    verdictDiv.textContent = "🛑 Malicious";
+                    verdictDiv.className = "verdict malicious";
+                } else {
+                    verdictDiv.textContent = "✅ Clean";
+                    verdictDiv.className = "verdict clean";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("An error occurred while scanning the file.");
+            });
+        });
+    </script>
+</body>
+</html>
