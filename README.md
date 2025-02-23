@@ -13,7 +13,7 @@ This web application allows users to perform **static malware analysis** on uplo
 
 ## Technology Stack
 ### Front-End
-- React / Angular / Vue (or simple HTML/CSS/JavaScript for basic UI)
+- simple HTML/CSS/JavaScript for basic UI
 
 ### Back-End
 - FastAPI (Python) for handling file uploads and scan requests
@@ -104,7 +104,32 @@ This web application allows users to perform **static malware analysis** on uplo
 - **Performance & Scalability**: Efficiently handling multiple file uploads.
 
 ## License
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. You can find the full license text in the [LICENSE](LICENSE) file.
+
+### MIT License
+```
+MIT License
+
+Copyright (c) [Year] [Your Name]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ## Contribution Guidelines
 1. Fork the repository and create a feature branch.
@@ -112,5 +137,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 3. Submit a pull request for review.
 
 ## Contact & Support
-For questions, issues, or suggestions, please open an issue in the repository or contact [your-email@example.com].
+For questions, issues, or suggestions, please open an issue in the repository or contact [kripakanodia@gamil.com].
 
