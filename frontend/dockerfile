@@ -1,0 +1,14 @@
+# Use an Nginx image as a base
+FROM nginx:latest
+
+# Remove default Nginx web directory
+RUN rm -rf /usr/share/nginx/html/*
+
+# Copy our frontend files to the container
+COPY . /usr/share/nginx/html/
+
+# Expose the port Nginx will run on
+EXPOSE 8080
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
