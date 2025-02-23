@@ -13,7 +13,7 @@ This web application allows users to perform **static malware analysis** on uplo
 
 ## Technology Stack
 ### Front-End
-- simple HTML/CSS/JavaScript for basic UI
+- React / Angular / Vue (or simple HTML/CSS/JavaScript for basic UI)
 
 ### Back-End
 - FastAPI (Python) for handling file uploads and scan requests
@@ -32,48 +32,64 @@ This web application allows users to perform **static malware analysis** on uplo
 - Node.js (if using a React/Angular front-end)
 - Docker (optional, for containerized deployment)
 
-### Clone the Repository
-```sh
-git clone https://github.com/yourusername/static-malware-scanner.git
-cd static-malware-scanner
-```
+### How to Set Up the Project
+1. **Clone the Repository**
+   ```sh
+   git clone https://github.com/yourusername/static-malware-scanner.git
+   cd static-malware-scanner
+   ```
+2. **Create and activate a virtual environment:**
+   ```sh
+   python -m venv venv
+   source venv/bin/activate  # On Windows use `venv\Scripts\activate`
+   ```
+3. **Install dependencies:**
+   ```sh
+   pip install -r requirements.txt
+   ```
 
-### Backend Setup
-1. Create and activate a virtual environment:
-```sh
-python -m venv venv
-source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-```
-2. Install dependencies:
-```sh
-pip install -r requirements.txt
-```
-3. Run the backend server:
-```sh
-uvicorn main:app --reload
-```
+### Steps to Run Locally
+#### **Backend**
+1. Start the backend server:
+   ```sh
+   uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+   ```
+2. The backend API will be available at `http://127.0.0.1:8000`
 
-### Frontend Setup (If Using React)
+#### **Frontend (If using React)**
 1. Navigate to the frontend directory:
-```sh
-cd frontend
-```
+   ```sh
+   cd frontend
+   ```
 2. Install dependencies:
-```sh
-npm install
-```
+   ```sh
+   npm install
+   ```
 3. Start the development server:
-```sh
-npm start
-```
+   ```sh
+   npm start
+   ```
+4. Open `http://localhost:3000` in a browser.
 
-## Usage
-1. Open the web application in a browser.
+## How to Test Its Functionality
+### **Manual Testing**
+1. Open the web application.
 2. Upload a suspicious file (`.exe`, `.pdf`, `.docx`, etc.).
-3. The system will analyze the file and return a verdict:
+3. Wait for the analysis results:
    - **Clean**: "No malicious indicators found."
    - **Malicious**: "High entropy and suspicious macro code detected."
-4. (Optional) View a risk factor report highlighting specific threats.
+4. View the **Risk Factor Report** (if implemented).
+
+### **Automated Testing**
+1. Run unit tests for backend functions:
+   ```sh
+   pytest tests/
+   ```
+2. Check API endpoints manually using **Postman** or **cURL**:
+   ```sh
+   curl -X POST -F "file=@testfile.exe" http://127.0.0.1:8000/upload
+   ```
+3. Ensure correct responses and error handling.
 
 ## Security Measures
 - **Input Validation**: Ensures only valid file types and sizes are processed.
@@ -87,15 +103,14 @@ npm start
 - **Security & Reliability**: Preventing system exploitation.
 - **Performance & Scalability**: Efficiently handling multiple file uploads.
 
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
 ## Contribution Guidelines
 1. Fork the repository and create a feature branch.
 2. Commit your changes with clear messages.
 3. Submit a pull request for review.
 
-## License
-This project is licensed under the MIT License. See the `LICENSE` file for details.
-
 ## Contact & Support
-For questions, issues, or suggestions, please open an issue in the repository or contact kripakanodia@gmail.com].
-
+For questions, issues, or suggestions, please open an issue in the repository or contact [your-email@example.com].
 
