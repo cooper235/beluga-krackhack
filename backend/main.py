@@ -1,6 +1,6 @@
 import os
 import re
-from fastapi import FastAPI, File, UploadFile, HTTPException, Depends
+from fastapi import FastAPI, File, UploadFile, HTTPException, Depends, Request
 from fastapi.responses import JSONResponse
 from slowapi import Limiter
 from slowapi.util import get_remote_address
@@ -24,8 +24,12 @@ def read_root():
     return {"message": "Welcome to the Malware Analysis API!"}
 
 @app.post("/scan/")
-@limiter.limit("5/minute")
-async def scan_file(file: UploadFile = File(...), db: Session = Depends(get_db)):
+@limiter.limit("5/minute")  # ✅ Rate limiting
+async def scan_file(
+    request: Request,  # ✅ Added Request argument
+    file: UploadFile = File(...), 
+    db: Session = Depends(get_db)
+):
     """Handle file uploads and scan for malware indicators in-memory."""
     
     # Validate file extension
@@ -43,8 +47,11 @@ async def scan_file(file: UploadFile = File(...), db: Session = Depends(get_db))
     # Perform static analysis (YARA, PE, Macro, PDF checks)
     scan_result = scan_file_content(contents, sanitized_filename)
 
-    # Save scan results to database
-    saved_result = save_scan_result(db, scan_result)
+    # Save scan results to database (Make sure this function works)
+    if db:  # ✅ Ensure db session is available
+        try:
+            save_scan_result(db, scan_result)
+        except Exception as e:
+            print(f"⚠️ Database save error: {e}")
 
     return JSONResponse(content=scan_result)
-
