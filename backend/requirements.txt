@@ -1,5 +1,6 @@
 fastapi
 uvicorn
-slowapi
-sqlalchemy
+python-multipart
+yara-python
+pefile
 
