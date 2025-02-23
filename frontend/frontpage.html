@@ -18,6 +18,7 @@
             text-align: center;
             overflow: hidden;
             position: relative;
+            background: black;
         }
         
         .video-background {
@@ -70,6 +71,11 @@
             border-radius: 50px;
             font-size: 1.2rem;
             cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .scan-button:hover {
+            background: linear-gradient(45deg, #00d4ff, #007bff);
         }
 
         .result {
@@ -107,14 +113,6 @@
             }
 
             const file = fileInput.files[0];
-            const allowedExtensions = [".exe", ".pdf", ".docx"];
-            const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
-
-            if (!allowedExtensions.includes(fileExtension)) {
-                alert("Invalid file type! Only .exe, .pdf, .docx are allowed.");
-                return;
-            }
-
             const formData = new FormData();
             formData.append("file", file);
 
@@ -153,4 +151,5 @@
     </script>
 </body>
 </html>
+
 
