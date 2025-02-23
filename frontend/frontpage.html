@@ -75,6 +75,8 @@
         .result {
             margin-top: 40px;
             display: none;
+            font-size: 1.5rem;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -83,7 +85,7 @@
         <h1>🔍 Malware Scanner</h1>
         <p>Upload a file to check for malicious content.</p>
         <video autoplay muted loop class="video-background">
-            <source src="https://www.pexels.com/download/video/3141210/" type="video/mp4">
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
         </video>
         <div class="upload-section">
             <input type="file" id="fileInput" class="file-input" accept=".exe, .docx, .pdf">
@@ -94,7 +96,7 @@
         </div>
     </div>
     <script>
-        document.getElementById("scanButton").addEventListener("click", function () {
+        document.getElementById("scanButton").addEventListener("click", async function () {
             const fileInput = document.getElementById("fileInput");
             const resultDiv = document.getElementById("result");
             const verdictDiv = document.getElementById("verdict");
@@ -105,25 +107,48 @@
             }
 
             const file = fileInput.files[0];
+            const allowedExtensions = [".exe", ".pdf", ".docx"];
+            const fileExtension = file.name.slice(file.name.lastIndexOf(".")).toLowerCase();
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                alert("Invalid file type! Only .exe, .pdf, .docx are allowed.");
+                return;
+            }
+
             const formData = new FormData();
             formData.append("file", file);
 
-            verdictDiv.textContent = "Scanning...";
+            verdictDiv.textContent = "🚀 Scanning...";
             resultDiv.style.display = "block";
+            verdictDiv.style.color = "yellow";
 
-            fetch("http://127.0.0.1:8000/scan/", {
-                method: "POST",
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                verdictDiv.textContent = data.isMalicious ? "🛑 Malicious" : "✅ Clean";
-                verdictDiv.style.color = data.isMalicious ? "red" : "green";
-            })
-            .catch(error => {
+            try {
+                const response = await fetch("http://127.0.0.1:8000/scan/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server Error: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.status === "success" && data.data) {
+                    const scanVerdict = data.data.isMalicious ? "🛑 Malicious" : "✅ Clean";
+                    verdictDiv.textContent = scanVerdict;
+                    verdictDiv.style.color = data.data.isMalicious ? "red" : "green";
+                } else {
+                    verdictDiv.textContent = "⚠️ Scan failed!";
+                    verdictDiv.style.color = "orange";
+                }
+
+            } catch (error) {
                 console.error("Error:", error);
                 alert("An error occurred while scanning the file.");
-            });
+                verdictDiv.textContent = "⚠️ Error scanning file!";
+                verdictDiv.style.color = "red";
+            }
         });
     </script>
 </body>
